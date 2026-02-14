@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Южный Парк: Кто ты?</title>
+    <style>
+        /* ========== СТИЛИ В СТИЛЕ SOUTH PARK ========== */
+        /* Шрифт как в сериале (детский, неровный) */
+        @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #f5e6d3; /* Цвет телесного/бумажного фона как в старых сериях */
+            font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
+            color: #2d2d2d;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Грубая текстура бумаги и имитация скотча */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle, #d3b9a2 2px, transparent 2px),
+                repeating-linear-gradient(45deg, rgba(0,0,0,0.02) 0px, rgba(0,0,0,0.02) 2px, transparent 2px, transparent 4px);
+            background-size: 30px 30px, 8px 8px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            background-color: #fff9e6;
+            border: 5px solid #2b2b2b;
+            border-radius: 30px 30px 15px 15px;
+            box-shadow: 15px 15px 0 rgba(0,0,0,0.2), 0 0 0 3px #f0b000, 0 0 0 6px #2b2b2b;
+            padding: 30px 25px;
+            max-width: 700px;
+            width: 100%;
+            position: relative;
+            z-index: 10;
+            transition: 0.2s;
+        }
+
+        /* Заголовок как в заставке */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 3.2rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            line-height: 1;
+            color: #e6342f; /* Красный как у Кайла */
+            text-shadow: 
+                4px 4px 0 #f0b000,
+                6px 6px 0 #2b2b2b,
+                8px 8px 0 rgba(0,0,0,0.1);
+            -webkit-text-stroke: 2px #2b2b2b;
+            transform: rotate(-1deg);
+            margin-bottom: 10px;
+        }
+
+        .header h1 span {
+            display: inline-block;
+            transform: rotate(1deg) scale(1.1);
+            color: #2a9fda; /* Синий как у Стенда */
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            background-color: #2b2b2b;
+            color: white;
+            display: inline-block;
+            padding: 8px 25px;
+            border-radius: 40px;
+            box-shadow: 5px 5px 0 #c0c0c0;
+            transform: rotate(0.5deg);
+        }
+
+        /* Персонажи вокруг (декоративные) */
+        .characters {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0 10px;
+            filter: drop-shadow(5px 5px 0 rgba(0,0,0,0.2));
+        }
+
+        .char-item {
+            width: 70px;
+            height: 70px;
+            background-color: #f0b000;
+            border: 3px solid #2b2b2b;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            transform: rotate(var(--rot, 0deg));
+            background: #fee3c0;
+            box-shadow: 5px 5px 0 #2b2b2b;
+        }
+
+        /* Аватарки (просто буквы для простоты, но можно заменить на эмодзи/картинки) */
+        .char-item:nth-child(1) { background: #c4d9ba; } /* Кенни */
+        .char-item:nth-child(2) { background: #f0b000; } /* Картман */
+        .char-item:nth-child(3) { background: #bf4b3a; color: white; } /* Кайл */
+        .char-item:nth-child(4) { background: #3f7040; color: white; } /* Стен */
+        .char-item:nth-child(5) { background: #b0866c; } /* Баттерс */
+
+        /* Блок вопроса */
+        .quiz-area {
+            background-color: #fef7d2;
+            border: 4px dashed #2b2b2b;
+            border-radius: 50px 20px 50px 20px;
+            padding: 25px 20px;
+            margin: 20px 0;
+            box-shadow: inset 0 0 0 3px white, 10px 10px 0 #2b2b2b;
+        }
+
+        .question {
+            font-size: 1.9rem;
+            font-weight: 800;
+            margin-bottom: 25px;
+            text-align: center;
+            word-break: break-word;
+            background: white;
+            padding: 15px;
+            border-radius: 100px 20px 100px 20px;
+            border: 3px solid #2b2b2b;
+            transform: rotate(-0.3deg);
+            box-shadow: 5px 5px 0 #7c7c7c;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: white;
+            border: 4px solid #2b2b2b;
+            border-radius: 60px 20px 60px 20px;
+            padding: 15px 25px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: 'Comic Neue', cursive;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.05s linear;
+            box-shadow: 8px 8px 0 #2b2b2b;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transform: rotate(0deg);
+        }
+
+        .option-btn:hover {
+            background: #f0f0f0;
+            transform: translate(3px, 3px);
+            box-shadow: 5px 5px 0 #2b2b2b;
+        }
+
+        .option-btn.selected {
+            background: #b2ff8e;
+            border-color: #0a5c0a;
+            box-shadow: 2px 2px 0 #0a5c0a;
+            transform: translate(6px, 6px);
+        }
+
+        .option-emoji {
+            font-size: 2.2rem;
+            filter: drop-shadow(2px 2px 0 #000);
+        }
+
+        /* Прогресс */
+        .progress {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .progress-bar {
+            height: 20px;
+            background: #d3b9a2;
+            border: 3px solid #2b2b2b;
+            border-radius: 30px;
+            flex-grow: 1;
+            margin: 0 15px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: #e6342f;
+            background: linear-gradient(90deg, #f0b000, #e6342f);
+            border-radius: 30px;
+            transition: width 0.2s;
+        }
+
+        /* Кнопки управления */
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .nav-btn {
+            background: #fee3c0;
+            border: 4px solid #2b2b2b;
+            border-radius: 40px;
+            padding: 12px 30px;
+            font-size: 1.8rem;
+            font-weight: 800;
+            font-family: 'Comic Neue', cursive;
+            cursor: pointer;
+            box-shadow: 7px 7px 0 #2b2b2b;
+            transition: 0.05s;
+            flex: 1 0 auto;
+            text-transform: uppercase;
+            color: #2b2b2b;
+        }
+
+        .nav-btn:active {
+            transform: translate(5px, 5px);
+            box-shadow: 2px 2px 0 #2b2b2b;
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.3;
+            transform: none;
+            box-shadow: 7px 7px 0 #2b2b2b;
+            pointer-events: none;
+        }
+
+        /* Результат */
+        .result-block {
+            text-align: center;
+            background: #fbe4a0;
+            border: 5px solid #2b2b2b;
+            border-radius: 80px 20px 80px 20px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+
+        .result-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            color: #2b2b2b;
+            text-shadow: 4px 4px 0 #e6342f;
+        }
+
+        .result-char {
+            font-size: 5rem;
+            line-height: 1.2;
+            background: white;
+            display: inline-block;
+            padding: 0px 40px;
+            border-radius: 200px;
+            border: 4px solid #2b2b2b;
+            margin: 15px 0;
+            box-shadow: 8px 8px 0 #2b2b2b;
+        }
+
+        .result-desc {
+            font-size: 1.7rem;
+            background: #2b2b2b;
+            color: white;
+            padding: 15px;
+            border-radius: 40px;
+        }
+
+        .restart-btn {
+            background: #e6342f;
+            color: white;
+            border: 4px solid #2b2b2b;
+            font-size: 2rem;
+            padding: 15px 40px;
+            margin-top: 25px;
+            border-radius: 80px;
+            box-shadow: 9px 9px 0 #2b2b2b;
+            cursor: pointer;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Адаптация */
+        @media (max-width: 500px) {
+            .header h1 { font-size: 2.4rem; }
+            .question { font-size: 1.5rem; }
+            .option-btn { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Шапка -->
+        <div class="header">
+            <h1>
+                <span>SOUTH</span> <span>PARK</span>
+            </h1>
+            <div class="subtitle">КТО ТЫ?</div>
+        </div>
+
+        <!-- Рожицы персонажей для настроения -->
+        <div class="characters">
+            <div class="char-item" style="--rot:-3deg">😎</div>
+            <div class="char-item" style="--rot:4deg">🐻</div>
+            <div class="char-item" style="--rot:-5deg">🧥</div>
+            <div class="char-item" style="--rot:2deg">🧢</div>
+            <div class="char-item" style="--rot:-2deg">🧀</div>
+        </div>
+
+        <!-- Основная область викторины -->
+        <div id="quizContainer">
+            <div class="quiz-area" id="quizArea">
+                <div class="question" id="questionText">Загрузка...</div>
+                <div class="options" id="optionsContainer"></div>
+            </div>
+
+            <!-- Прогресс и навигация -->
+            <div class="progress">
+                <span id="currentQ">1</span>/<span id="totalQ">5</span>
+                <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width: 20%;"></div></div>
+            </div>
+
+            <div class="nav-buttons">
+                <button class="nav-btn" id="prevBtn" disabled>◀ НАЗАД</button>
+                <button class="nav-btn" id="nextBtn">ДАЛЕЕ ▶</button>
+            </div>
+        </div>
+
+        <!-- Блок результата (изначально скрыт) -->
+        <div id="resultContainer" class="result-block hidden">
+            <div class="result-title">ТЫ —</div>
+            <div class="result-char" id="resultChar">🦸</div>
+            <div class="result-desc" id="resultDesc">Эрик Картман</div>
+            <button class="restart-btn" id="restartBtn">◀ ЗАНОВО</button>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // ========== ДАННЫЕ ВИКТОРИНЫ ==========
+            const characters = [
+                { 
+                    name: 'Эрик Картман', 
+                    emoji: '🐷', 
+                    desc: 'Ты властный, хитрый и не терпишь, когда всё идёт не по-твоему. Но при этом — прирождённый лидер! Уважай своих друзей, придурок!' 
+                },
+                { 
+                    name: 'Стэн Марш', 
+                    emoji: '🧢', 
+                    desc: 'Ты голос разума в компании. Немного циничный, но справедливый. Всегда готов помочь, хотя часто говоришь: «О боже мой, они убили Кенни!»' 
+                },
+                { 
+                    name: 'Кайл Брофловски', 
+                    emoji: '🧥', 
+                    desc: 'Ты принципиальный, умный и носит шапку-ушанку. Тебя бесит Картман, но ты всё равно с ним дружишь. И ты любишь своих родителей, несмотря ни на что!' 
+                },
+                { 
+                    name: 'Кенни Маккормик', 
+                    emoji: '😎', 
+                    desc: 'Ты бедный, но крутой. Тебя сложно понять из-за капюшона, но ты душа компании. Главное — не умирай слишком часто.' 
+                },
+                { 
+                    name: 'Баттерс Стотч', 
+                    emoji: '🐻', 
+                    desc: 'Ты наивный, добрый и вечно попадаешь в переделки. Но твоя доброта и оптимизм спасают мир (иногда буквально). Ох, гамболы!' 
+                }
+            ];
+
+            const questions = [
+                {
+                    text: 'Твои друзья позвали тебя дурачиться, но мама заставляет убираться в комнате. Твои действия?',
+                    answers: [
+                        { text: 'Скажу маме, что убирался, а сам сбегу!', chars: [3, 0, 0, 0, 0] }, // Картман
+                        { text: 'Буду ныть, пока мама не сдастся.', chars: [0, 0, 0, 0, 4] }, // Баттерс
+                        { text: 'Быстро уберусь и пойду гулять.', chars: [0, 2, 1, 0, 0] }, // Стэн и Кайл
+                        { text: 'Пойду гулять, а комната подождёт.', chars: [0, 0, 0, 3, 0] } // Кенни
+                    ]
+                },
+                {
+                    text: 'Какой предмет ты бы выбрал в школе?',
+                    answers: [
+                        { text: 'Физ-ра — тусить с друзьями!', chars: [0, 2, 1, 2, 0] },
+                        { text: 'Искусство — выражать себя.', chars: [0, 0, 0, 0, 4] },
+                        { text: 'История — спорить с учителем.', chars: [2, 1, 3, 0, 0] },
+                        { text: 'Обед — самое важное!', chars: [0, 0, 0, 3, 0] }
+                    ]
+                },
+                {
+                    text: 'Твой любимый способ повеселиться?',
+                    answers: [
+                        { text: 'Играть в видеоигры и жрать чипсы.', chars: [3, 1, 0, 1, 0] },
+                        { text: 'Строить козни против конкурентов.', chars: [4, 0, 0, 0, 0] },
+                        { text: 'Тусоваться на улице, даже в мороз.', chars: [0, 0, 0, 4, 0] },
+                        { text: 'Петь или играть в ролевки.', chars: [0, 0, 0, 0, 4] }
+                    ]
+                },
+                {
+                    text: 'Что ты думаешь о жителях Саут-Парка?',
+                    answers: [
+                        { text: 'Они тупые!', chars: [3, 1, 0, 1, 0] },
+                        { text: 'Они прикольные, но странные.', chars: [0, 2, 2, 0, 1] },
+                        { text: 'Мне всё равно, я в капюшоне.', chars: [0, 0, 0, 4, 0] },
+                        { text: 'Они классные! Все такие милые!', chars: [0, 0, 0, 0, 4] }
+                    ]
+                },
+                {
+                    text: 'Если бы ты мог обладать суперсилой, какой?',
+                    answers: [
+                        { text: 'Неуязвимость (чтоб не умирать).', chars: [0, 0, 0, 4, 0] },
+                        { text: 'Гипер-интеллект, чтобы манипулировать.', chars: [4, 0, 1, 0, 0] },
+                        { text: 'Сила убеждения и справедливость.', chars: [0, 2, 3, 0, 0] },
+                        { text: 'Превращать всё в гамболы!', chars: [0, 0, 0, 0, 4] }
+                    ]
+                }
+            ];
+
+            // ========== СОСТОЯНИЕ ==========
+            let currentQuestionIndex = 0;
+            const totalQuestions = questions.length;
+            // Массив выбранных ответов (индексы). null - не выбран
+            let selectedAnswers = new Array(totalQuestions).fill(null);
+
+            // Счетчики персонажей (индексы 0-4 соответствуют characters)
+            let characterScores = [0, 0, 0, 0, 0];
+
+            // DOM элементы
+            const quizContainer = document.getElementById('quizContainer');
+            const resultContainer = document.getElementById('resultContainer');
+            const questionEl = document.getElementById('questionText');
+            const optionsEl = document.getElementById('optionsContainer');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const restartBtn = document.getElementById('restartBtn');
+            const currentQSpan = document.getElementById('currentQ');
+            const totalQSpan = document.getElementById('totalQ');
+            const progressFill = document.getElementById('progressFill');
+            const resultChar = document.getElementById('resultChar');
+            const resultDesc = document.getElementById('resultDesc');
+
+            totalQSpan.textContent = totalQuestions;
+
+            // ========== ФУНКЦИИ ==========
+            // Обновить отображение вопроса и вариантов
+            function renderQuestion() {
+                const q = questions[currentQuestionIndex];
+                questionEl.textContent = q.text;
+                
+                // Генерируем кнопки ответов
+                let htmlStr = '';
+                q.answers.forEach((ans, idx) => {
+                    const isSelected = (selectedAnswers[currentQuestionIndex] === idx);
+                    const selectedClass = isSelected ? 'selected' : '';
+                    htmlStr += `
+                        <div class="option-btn ${selectedClass}" data-qidx="${currentQuestionIndex}" data-aidx="${idx}">
+                            <span class="option-emoji">${getEmojiForAnswer(idx)}</span>
+                            <span>${ans.text}</span>
+                        </div>
+                    `;
+                });
+                optionsEl.innerHTML = htmlStr;
+
+                // Добавляем обработчики на новые кнопки
+                document.querySelectorAll('.option-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const qIdx = parseInt(btn.dataset.qidx);
+                        const aIdx = parseInt(btn.dataset.aidx);
+                        selectAnswer(qIdx, aIdx);
+                    });
+                });
+
+                // Обновляем прогресс
+                currentQSpan.textContent = currentQuestionIndex + 1;
+                let progressPercent = ((currentQuestionIndex + 1) / totalQuestions) * 100;
+                progressFill.style.width = progressPercent + '%';
+
+                // Состояние кнопок навигации
+                prevBtn.disabled = (currentQuestionIndex === 0);
+                // Меняем текст кнопки "Далее" на "Результат" если последний вопрос
+                if (currentQuestionIndex === totalQuestions - 1) {
+                    nextBtn.textContent = 'КТО Я? ▶';
+                } else {
+                    nextBtn.textContent = 'ДАЛЕЕ ▶';
+                }
+            }
+
+            function getEmojiForAnswer(idx) {
+                const emojis = ['😈', '😇', '🤓', '😎'];
+                return emojis[idx % emojis.length];
+            }
+
+            // Выбрать ответ
+            function selectAnswer(qIdx, aIdx) {
+                if (qIdx !== currentQuestionIndex) return; // защита
+                selectedAnswers[qIdx] = aIdx;
+                // Визуально обновляем классы
+                document.querySelectorAll('.option-btn').forEach(btn => {
+                    const btnQIdx = parseInt(btn.dataset.qidx);
+                    const btnAIdx = parseInt(btn.dataset.aidx);
+                    if (btnQIdx === qIdx) {
+                        if (btnAIdx === aIdx) {
+                            btn.classList.add('selected');
+                        } else {
+                            btn.classList.remove('selected');
+                        }
+                    }
+                });
+            }
+
+            // Подсчет результатов на основе selectedAnswers
+            function calculateResult() {
+                // Обнуляем счет
+                characterScores = [0, 0, 0, 0, 0];
+                
+                for (let qIdx = 0; qIdx < questions.length; qIdx++) {
+                    const aIdx = selectedAnswers[qIdx];
+                    if (aIdx !== null) {
+                        const answer = questions[qIdx].answers[aIdx];
+                        // Прибавляем очки персонажам (chars - массив прибавок)
+                        for (let c = 0; c < characters.length; c++) {
+                            characterScores[c] += answer.chars[c];
+                        }
+                    }
+                }
+
+                // Находим индекс персонажа с максимумом
+                let maxScore = -1;
+                let bestCharIndex = 0;
+                for (let i = 0; i < characterScores.length; i++) {
+                    if (characterScores[i] > maxScore) {
+                        maxScore = characterScores[i];
+                        bestCharIndex = i;
+                    }
+                }
+
+                // Если все нули (ни одного ответа) - рандомный или Картман по умолчанию
+                if (maxScore <= 0) {
+                    bestCharIndex = 0; // Картман, потому что он всегда побеждает
+                }
+
+                return bestCharIndex;
+            }
+
+            // Показать экран результата
+            function showResult() {
+                const bestIdx = calculateResult();
+                const char = characters[bestIdx];
+                resultChar.textContent = char.emoji + ' ' + char.name;
+                resultDesc.textContent = char.desc;
+
+                // Скрываем викторину, показываем результат
+                quizContainer.classList.add('hidden');
+                resultContainer.classList.remove('hidden');
+            }
+
+            // Сброс к началу
+            function restartQuiz() {
+                currentQuestionIndex = 0;
+                selectedAnswers = new Array(totalQuestions).fill(null);
+                characterScores = [0,0,0,0,0];
+
+                quizContainer.classList.remove('hidden');
+                resultContainer.classList.add('hidden');
+
+                renderQuestion();
+            }
+
+            // Переход на следующий вопрос
+            function goToNext() {
+                if (currentQuestionIndex < totalQuestions - 1) {
+                    // Если есть следующий вопрос
+                    currentQuestionIndex++;
+                    renderQuestion();
+                } else {
+                    // Если это был последний вопрос - показать результат
+                    // Но проверим, выбран ли последний ответ? (можно пропустить, но лучше предупредить)
+                    if (selectedAnswers[currentQuestionIndex] === null) {
+                        alert('Ответь на вопрос, жиртрест!');
+                        return;
+                    }
+                    showResult();
+                }
+            }
+
+            function goToPrev() {
+                if (currentQuestionIndex > 0) {
+                    currentQuestionIndex--;
+                    renderQuestion();
+                }
+            }
+
+            // ========== ИНИЦИАЛИЗАЦИЯ И ОБРАБОТЧИКИ ==========
+            renderQuestion();
+
+            // Кнопки
+            prevBtn.addEventListener('click', goToPrev);
+            nextBtn.addEventListener('click', goToNext);
+            restartBtn.addEventListener('click', restartQuiz);
+
+            // Дополнительная проверка: если пользователь нажимает "КТО Я?" а ответ не выбран - не давать уйти
+            // Но мы уже сделали проверку в goToNext.
+        })();
+    </script>
+</body>
+</html>
